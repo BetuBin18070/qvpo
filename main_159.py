@@ -12,8 +12,9 @@ import gym
 import os
 from logger import Logger
 import datetime
-import wandb
 import time
+import wandb
+
 
 def readParser():
     parser = argparse.ArgumentParser(description='Diffusion Policy')
@@ -133,13 +134,14 @@ def main(args=None, logger=None, id=None):
 
     device = torch.device(args.cuda)
 
-    dir = f"/blob/rl4s/users/yuwang5/qingbin/qvpo_record" 
+    dir = f"./qvpo_record" 
     # dir = "test"
     log_dir = os.path.join(dir, f'{args.env_name}', f'policy_type={args.policy_type}', f'ratio={args.ratio}',
                            f'seed={args.seed}')
     writer = SummaryWriter(log_dir)        
-                  
-    wandb.init(project='qvpo_record',id=f"run_{int(time.time())}", name=log_dir[len('/blob/rl4s/users/yuwang5/qingbin/qvpo_record'):], config=args)
+    
+    print('time ',time.time())
+    wandb.init(project='qvpo_record',id=f"run_{int(time.time())}", name=log_dir[len('./qvpo_record'):], config=args)
     
 
     # Initial environment
@@ -154,6 +156,8 @@ def main(args=None, logger=None, id=None):
     np.random.seed(args.seed)
     env.seed(args.seed)
     eval_env.seed(args.seed)
+    env.action_space.seed(args.seed)
+    eval_env.action_space.seed(args.seed)
 
     memory_size = 1e6
     num_steps = args.num_steps
@@ -163,7 +167,6 @@ def main(args=None, logger=None, id=None):
     batch_size = args.batch_size
     log_interval = 10
     tmp_result = -99999999999
-
     memory = ReplayMemory(state_size, action_size, memory_size, device)
     diffusion_memory = DiffusionMemory(state_size, action_size, memory_size, device)
 
@@ -226,7 +229,7 @@ def main(args=None, logger=None, id=None):
 if __name__ == "__main__":
     args = readParser()
     if args.target_sample == -1:
-        args.target_sample = args.behaviosr_sample
+        args.target_sample = args.behavior_sample
 
 
     ## settings
