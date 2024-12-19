@@ -12,6 +12,8 @@ import gym
 import os
 from logger import Logger
 import datetime
+import wandb
+
 
 def readParser():
     parser = argparse.ArgumentParser(description='Diffusion Policy')
@@ -20,7 +22,7 @@ def readParser():
     parser.add_argument('--seed', type=int, default=0, metavar='N',
                         help='random seed (default: 0)')
 
-    parser.add_argument('--num_steps', type=int, default=1000000, metavar='N',
+    parser.add_argument('--num_steps', type=int, default=1000002, metavar='N',
                         help='env timesteps (default: 1000000)')
 
     parser.add_argument('--batch_size', type=int, default=256, metavar='N',
@@ -94,7 +96,7 @@ def readParser():
     parser.add_argument('--times', type=int, default=1, metavar='N', help="times (default: 1)")
 
     parser.add_argument('--epsilon', type=float, default=0.0, metavar='G', help="eps greedy (default: 0.0)")
-    parser.add_argument('--entropy_alpha', type=float, default=0.02, metavar='G', help="entropy_alpha (default: 0.02)")
+    parser.add_argument('--entropy_alpha', type=float, default=0.01, metavar='G', help="entropy_alpha (default: 0.02)")
 
 
     return parser.parse_args()
@@ -131,11 +133,14 @@ def main(args=None, logger=None, id=None):
 
     device = torch.device(args.cuda)
 
-    dir = "record"
+    dir = f"/blob/rl4s/users/yuwang5/qingbin/qvpo_record" 
     # dir = "test"
     log_dir = os.path.join(dir, f'{args.env_name}', f'policy_type={args.policy_type}', f'ratio={args.ratio}',
                            f'seed={args.seed}')
-    writer = SummaryWriter(log_dir)
+    writer = SummaryWriter(log_dir)        
+                  
+    wandb.init(project='qvpo_record',id=f"run_{int(time.time())}", name=log_dir[len('/blob/rl4s/users/yuwang5/qingbin/qvpo_record'):], config=args)
+    
 
     # Initial environment
     env = gym.make(args.env_name)
@@ -153,7 +158,7 @@ def main(args=None, logger=None, id=None):
     memory_size = 1e6
     num_steps = args.num_steps
     start_steps = 10000
-    eval_interval = 10000
+    eval_interval = 5000
     updates_per_step = 1
     batch_size = args.batch_size
     log_interval = 10
@@ -193,10 +198,12 @@ def main(args=None, logger=None, id=None):
                 agent.entropy_alpha = min(args.entropy_alpha, max(0.002, args.entropy_alpha-steps/num_steps*args.entropy_alpha))
 
             if steps % eval_interval == 0:
-                tmp_result = evaluate(eval_env, agent, steps)
+                if steps % (eval_interval*6) ==0:
+                    tmp_result = evaluate(eval_env, agent, steps)
+                    wandb.log({'reward/test': tmp_result,"reward_step": steps})
                 if tmp_result > best_result:
                     best_result = tmp_result
-                    agent.save_model(os.path.join('./results', prefix + '_' + name), id=id)
+                agent.save_model(os.path.join(log_dir, prefix + '_' + name), id=id)
                 # self.save_models()
 
             state = next_state
@@ -207,11 +214,13 @@ def main(args=None, logger=None, id=None):
         print(f'episode: {episodes:<4}  '
               f'episode steps: {episode_steps:<4}  '
               f'reward: {episode_reward:<5.1f}')
+        wandb.log({'reward/train': episode_reward,"reward_step": steps})
 
         if logger is not None:
             for i in range(episode_steps):
                 logger.add(epoch=steps-episode_steps+i, reward=episode_reward)
 
+    wandb.finish()
 
 if __name__ == "__main__":
     args = readParser()
