@@ -7,8 +7,11 @@ GPUS=(3)
 # ENVIRONMENTS=("Ant-v3" "HalfCheetah-v3" "Hopper-v3" "Humanoid-v3" "Walker2d-v3")
 # TARGET_SAMPLES=(2 4 1 2 2)
 
-ENVIRONMENTS=("Hopper-v3")
-TARGET_SAMPLES=(1)
+# ENVIRONMENTS=("Hopper-v3")
+# TARGET_SAMPLES=(1)
+
+ENVIRONMENTS=("Humanoid-v3")
+TARGET_SAMPLES=(2)
 
 # 设置随机种子范围
 SEEDS=(0 1 2 3 4)

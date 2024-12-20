@@ -143,7 +143,9 @@ def main(args=None, logger=None, id=None):
     print('time ',time.time())
     wandb.init(project='qvpo_record',id=f"run_{int(time.time())}", name=log_dir[len('./qvpo_record'):], config=args)
     
+    wandb.define_metric("reward_step")
 
+    wandb.define_metric("reward/*", step_metric="reward_step")
     # Initial environment
     env = gym.make(args.env_name)
     eval_env = copy.deepcopy((env))
@@ -207,7 +209,7 @@ def main(args=None, logger=None, id=None):
                     wandb.log({'reward/test': tmp_result,"reward_step": steps})
                 if tmp_result > best_result:
                     best_result = tmp_result
-                agent.save_model(os.path.join(log_dir, prefix + '_' + name), id=id)
+                agent.save_model(os.path.join(log_dir, prefix + '_' + name), id=steps)
                 # self.save_models()
 
             state = next_state
