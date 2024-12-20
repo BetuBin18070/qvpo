@@ -135,7 +135,7 @@ def main(args=None, logger=None, id=None):
 
     dir = f"/blob/rl4s/users/yuwang5/qingbin/qvpo_record" 
     # dir = "test"
-    log_dir = os.path.join(dir, f'{args.env_name}', f'policy_type={args.policy_type}', f'ratio={args.ratio}',
+    log_dir = os.path.join(dir, f'{args.env_name}', f"aug{int(args.aug)}",f'policy_type={args.policy_type}', f'ratio={args.ratio}',
                            f'seed={args.seed}')
     writer = SummaryWriter(log_dir)        
                   
