@@ -27,7 +27,7 @@ for i in "${!ENVIRONMENTS[@]}"; do
         GPU=${GPUS[$(( (SEED + i) % ${#GPUS[@]} ))]}
         
         # 日志文件名
-        cmd="source ~/.bashrc; cd /data/users/liqingbin0206/workspace/Research/DiffusionRL/qvpo/; conda init; conda activate causalRL; export WANDB_API_KEY=c92617587866adffa38fa0ef2ecee09dd08652b2; CUDA_VISIBLE_DEVICES=${GPU} python main_159.py --env_name ${ENV} --weighted --aug --target_sample ${TARGET} --seed ${SEED}"
+        cmd="source ~/.bashrc; cd /data/users/liqingbin0206/workspace/Research/DiffusionRL/qvpo/; conda init; conda activate causalRL; export WANDB_API_KEY=c92617587866adffa38fa0ef2ecee09dd08652b2; CUDA_VISIBLE_DEVICES=${GPU} python main_159.py --env_name ${ENV} --weighted --aug  --target_sample ${TARGET} --seed ${SEED}"
 
         LOG_FILE="logs/${ENV}_seed${SEED}.log"
         mkdir -p logs  # 创建日志文件夹

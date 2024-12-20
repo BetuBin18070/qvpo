@@ -4,11 +4,17 @@
 GPUS=(0 1 2 3)
 
 # 设置环境和对应的 target_sample 参数
-ENVIRONMENTS=("Ant-v3" "HalfCheetah-v3" "Hopper-v3" "Humanoid-v3" "Walker2d-v3")
-TARGET_SAMPLES=(2 4 1 2 2)
+# ENVIRONMENTS=("Ant-v3" "HalfCheetah-v3" "Hopper-v3" "Humanoid-v3" "Walker2d-v3")
+# TARGET_SAMPLES=(2 4 1 2 2)
 
 # 设置随机种子范围
-SEEDS=(0 1 2 3 4)
+# SEEDS=(0 1 2 3 4)
+
+ENVIRONMENTS=("Ant-v3" "HalfCheetah-v3" "Humanoid-v3")
+TARGET_SAMPLES=(2 4 2)
+
+# 设置随机种子范围
+SEEDS=(0 1)
 
 # 遍历所有环境
 for i in "${!ENVIRONMENTS[@]}"; do
@@ -21,7 +27,7 @@ for i in "${!ENVIRONMENTS[@]}"; do
         GPU=${GPUS[$(( (SEED + i) % ${#GPUS[@]} ))]}
         
         # 日志文件名
-        cmd="cd ~/DRL/qvpo; source ~/.bashrc; conda init; conda activate baseRL; export WANDB_API_KEY=c92617587866adffa38fa0ef2ecee09dd08652b2; CUDA_VISIBLE_DEVICES=${GPU} python main.py --env_name ${ENV} --weighted --aug --target_sample ${TARGET} --seed ${SEED}"
+        cmd="cd ~/DRL/qvpo; source ~/.bashrc; conda init; conda activate baseRL; export WANDB_API_KEY=c92617587866adffa38fa0ef2ecee09dd08652b2; CUDA_VISIBLE_DEVICES=${GPU} python main.py --env_name ${ENV} --weighted --aug --train_sample 1 --target_sample ${TARGET} --seed ${SEED}"
 
         LOG_FILE="logs/${ENV}_seed${SEED}.log"
         mkdir -p logs  # 创建日志文件夹

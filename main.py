@@ -7,7 +7,7 @@ import torch
 from agent.qvpo import QVPO
 from agent.replay_memory import ReplayMemory, DiffusionMemory
 
-from tensorboardX import SummaryWriter
+from torch.utils.tensorboard import SummaryWriter
 import gym
 import os
 from logger import Logger
@@ -135,7 +135,7 @@ def main(args=None, logger=None, id=None):
 
     dir = f"/blob/rl4s/users/yuwang5/qingbin/qvpo_record" 
     # dir = "test"
-    log_dir = os.path.join(dir, f'{args.env_name}', f"aug{int(args.aug)}",f'policy_type={args.policy_type}', f'ratio={args.ratio}',
+    log_dir = os.path.join(dir, f'{args.env_name}', f"aug{int(args.aug)}_train_sample{args.train_sample}",f'policy_type={args.policy_type}', f'ratio={args.ratio}',
                            f'seed={args.seed}')
     writer = SummaryWriter(log_dir)        
                   
@@ -204,7 +204,7 @@ def main(args=None, logger=None, id=None):
                     wandb.log({'reward/test': tmp_result,"reward_step": steps})
                 if tmp_result > best_result:
                     best_result = tmp_result
-                agent.save_model(os.path.join(log_dir, prefix + '_' + name), id=id)
+                agent.save_model(os.path.join(log_dir, prefix + '_' + name), id=steps)
                 # self.save_models()
 
             state = next_state
